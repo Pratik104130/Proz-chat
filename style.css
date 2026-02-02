@@ -191,5 +191,24 @@ h4{
     }
 }
 
+@media (min-width: 500px) {
+    
+    .chat-container {
+    width: 760px;
+    position: relative;
+    left: -5px;
+    top: -5px;
+    margin: 10px auto;
+    background: linear-gradient(30deg, red, #B044C5);
+    border-radius: 12px;
+    padding: 30px;
+}
 
+h4{
+    font-size: 20px;
+}
 
+h2{
+    font-size: 35px;
+}
+}
