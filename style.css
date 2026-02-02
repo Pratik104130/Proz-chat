@@ -80,6 +80,8 @@ h2 {
 .input-box {
     display: flex;
     margin-top: 6px;
+
+
 }
 
 input {
@@ -89,6 +91,8 @@ input {
 
 #message {
     flex: 1;
+
+
 }
 
 button {
@@ -191,17 +195,21 @@ h4{
     }
 }
 
+
+/*responsive design */
+
 @media (min-width: 500px) {
     
     .chat-container {
-    width: 760px;
+    width: 750px;
     position: relative;
     left: -5px;
     top: -5px;
+    
     margin: 10px auto;
     background: linear-gradient(30deg, red, #B044C5);
     border-radius: 12px;
-    padding: 30px;
+    padding: 50px;
 }
 
 h4{
@@ -211,4 +219,108 @@ h4{
 h2{
     font-size: 35px;
 }
+
+#exitGroupBtn {
+    background: red;
+    box-shadow: 3px 2px 2px #000;
+    font-size: 26px;
+    width: 150px;
+    height: 70px;
+    position: absolute;
+    top: -1px;
+    left: 40rem;
+}
+#createGroupBtn{
+    font-size: 30px;
+    margin-top: 30px;
+}
+#joinGroupBtn{
+    margin-left: 20rem;
+    font-size: 30px;
+    height: 50px;
+}
+
+#currentGroupDisplay{
+    font-size: 30px;
+}
+
+#status{
+    font-size: 23px;
+}
+
+#onlineUsers{
+   font-size: 30px;
+ 
+}
+
+
+.msg {
+    position: relative;
+    padding: 22px 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    max-width: 40%;
+    font-size: 30px;
+    box-shadow: 1px 2px 0 #ccc;
+    margin-bottom: 5px;
+    
+}
+
+.msg.you {
+    background: linear-gradient(30deg, #D7B2FF, #FBB2FF);
+    margin-left: auto;
+    
+    border-bottom-right-radius: 15px;
+    border-top-left-radius: 15px;
+    
+}
+
+.msg.other {
+    background: linear-gradient(30deg, #FFB5B5, #FFEECC);
+    margin-right: auto;
+    margin-top: 10px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+
+}
+
+.msg .time {
+    font-size: 22px;
+    color: gray;
+    position: absolute;
+    right: 5px;
+    bottom: 2px;
+}
+
+.tick{
+    font-size: 22px;
+}
+
+#messages {
+    min-height: 800px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+#username{
+    height: 50px;
+    width:250px;
+    font-size: 25px;
+    text-align: center;
+    margin-bottom: 10px;
+
+}
+
+.msg-main{
+    height:80px;
+    margin-left: 30px;
+    max-width: 700px;
+    font-size: 25px;
+}
+#sendBtn{
+    width:200px;
+}
+
+
 }
