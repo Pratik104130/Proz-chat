@@ -297,7 +297,7 @@ h2{
 }
 
 #messages {
-    min-height: 800px;
+    min-height: 1000px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 8px;
@@ -320,7 +320,12 @@ h2{
 }
 #sendBtn{
     width:200px;
+    font-size: 30px;
 }
 
+.delete{
+    font-size: 25px;
+    margin-left: 20px;
+}
 
 }
