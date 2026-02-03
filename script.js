@@ -27,12 +27,33 @@ var exitGroupBtn   = document.getElementById("exitGroupBtn");
 var onlineDiv      = document.getElementById("onlineUsers");
 var currentGroupDisplay = document.getElementById("currentGroupDisplay"); // top right
 
+
+
+let unreadDividerAdded = false;
+
+function getLastSeenKey() {
+  return "lastSeen_" + currentGroup;
+}
+
+
+
 // ================= GLOBAL VARIABLES =================
+
+
+
+
 var currentGroup = "default"; // default group
 let soundEnabled = false;
 
+let isAtBottom = true;
+
+let lastDateLabel = "";
 // ================= USERNAME & STATUS =================
-usernameInput.value = localStorage.getItem("username") || "";
+const savedName = localStorage.getItem("username");
+if (savedName) {
+  usernameInput.value = savedName;
+  initStatus();
+}
 
 function initStatus() {
   var username = usernameInput.value;
@@ -49,10 +70,33 @@ function initStatus() {
 
 initStatus();
 
-usernameInput.addEventListener("change", () => {
-  localStorage.setItem("username", usernameInput.value);
-  initStatus();
+let usernameTimer;
+
+usernameInput.addEventListener("input", () => {
+  clearTimeout(usernameTimer);
+  
+  usernameTimer = setTimeout(async () => {
+    let baseName = usernameInput.value.trim();
+    if (!baseName) return;
+    
+    const uniqueName = await getUniqueUsername(baseName);
+    
+    usernameInput.value = uniqueName;
+    localStorage.setItem("username", uniqueName);
+    
+    db.ref("users/" + uniqueName).set(true);
+    initStatus();
+  }, 600); // wait till user stops typing
 });
+
+function checkAdmin() {
+  isAdmin = (usernameInput.value === ADMIN_NAME);
+  if (isAdmin) {
+    showAdminPanel();
+  } else {
+    hideAdminPanel();
+  }
+}
 
 // ================= CURRENT GROUP DISPLAY =================
 function updateGroupDisplay() {
@@ -138,6 +182,11 @@ function joinGroupFirebase(groupName) {
   currentGroup = groupName;
   localStorage.setItem("currentGroup", currentGroup); // persist
   messagesDiv.innerHTML = "";
+  lastDateLabel = "";
+  // save last seen when leaving previous group
+const lastKey = getLastSeenKey();
+localStorage.setItem(lastKey, Date.now());
+unreadDividerAdded = false;
   loadGroupMessages();
   setGroupMemberStatus(currentGroup);
   updateOnlineUsers();
@@ -190,58 +239,114 @@ function sendMessage() {
 // ================= FORMAT TIME =================
 function formatTime(timestamp) {
   const date = new Date(timestamp);
-  let hours = date.getHours();
+  
+  let hours = date.getHours(); // 0–23
   let minutes = date.getMinutes();
-  if (hours < 10) hours = "0" + hours;
+  const ampm = hours >= 12 ? "PM" : "AM";
+  
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 → 12
+  
   if (minutes < 10) minutes = "0" + minutes;
-  return hours + ":" + minutes;
+  
+  return hours + ":" + minutes + " " + ampm;
 }
-
+function getDateLabel(time) {
+  const msgDate = new Date(Number(time));
+  const now = new Date();
+  
+  const startToday = new Date();
+  startToday.setHours(0, 0, 0, 0);
+  
+  const startYesterday = new Date(startToday);
+  startYesterday.setDate(startYesterday.getDate() - 1);
+  
+  if (msgDate >= startToday) return "Today";
+  if (msgDate >= startYesterday) return "Yesterday";
+  
+  const d = String(msgDate.getDate()).padStart(2, "0");
+  const m = String(msgDate.getMonth() + 1).padStart(2, "0");
+  const y = msgDate.getFullYear();
+  
+  return `${d}/${m}/${y}`;
+}
 // ================= LOAD GROUP MESSAGES =================
 function loadGroupMessages() {
-  db.ref("groupMessages/" + currentGroup).limitToLast(100).off();
-
-  // New message added
-  db.ref("groupMessages/" + currentGroup).limitToLast(100).on("child_added", snapshot => {
+  const ref = db.ref("groupMessages/" + currentGroup).limitToLast(100);
+  
+  messagesDiv.innerHTML = "";
+  
+  ref.off();
+  
+  ref.on("child_added", snapshot => {
+    const shouldStickToBottom =
+      messagesDiv.scrollTop + messagesDiv.clientHeight >=
+      messagesDiv.scrollHeight - 40;
+    
     displayMessage(snapshot);
+    
+    if (shouldStickToBottom) {
+      requestAnimationFrame(() => {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    }
   });
-
-  // Update seen ticks
-  db.ref("groupMessages/" + currentGroup).on("child_changed", snapshot => {
+  
+  ref.on("child_changed", snapshot => {
     updateSeen(snapshot);
   });
-
-  // Remove messages in real-time
-  db.ref("groupMessages/" + currentGroup).on("child_removed", snapshot => {
-    var msgDiv = document.getElementById(snapshot.key);
-    if (msgDiv) msgDiv.remove(); // remove immediately
+  
+  ref.on("child_removed", snapshot => {
+    const msgDiv = document.getElementById(snapshot.key);
+    if (msgDiv) msgDiv.remove();
   });
 }
 
 // ================= DISPLAY MESSAGE =================
 function displayMessage(snapshot) {
-  var data = snapshot.val();
+  const data = snapshot.val();
   if (!data || !data.name || !data.text) return;
-
-  var myName = usernameInput.value;
-  var msgDiv = document.createElement("div");
+  
+  const myName = usernameInput.value;
+  
+  // ===== DATE SEPARATOR LOGIC =====
+  const currentLabel = getDateLabel(data.time);
+  
+  if (currentLabel !== lastDateLabel) {
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "date-separator";
+    dateDiv.textContent = `--- ${currentLabel} ---`;
+    messagesDiv.appendChild(dateDiv);
+    
+    lastDateLabel = currentLabel;
+  }
+  // ===============================
+  
+  const msgDiv = document.createElement("div");
   msgDiv.className = "msg " + (data.name === myName ? "you" : "other");
   msgDiv.id = snapshot.key;
-
-  var ticks = "";
+  
+  let ticks = "";
   if (data.name === myName) {
-    ticks = data.seen ? `<span class="tick seen">✔✔</span>` : `<span class="tick">✔</span>`;
+    ticks = data.seen ?
+      `<span class="tick seen">✔✔</span>` :
+      `<span class="tick">✔</span>`;
   }
-
-  var deleteHTML = "";
+  
+  let deleteHTML = "";
   if (data.name === myName) {
     deleteHTML = `<span class="delete" onclick="deleteMessage('${snapshot.key}')"> delete</span>`;
   }
-
-  var timeHTML = `<span class="time">${formatTime(data.time)}</span>`; // show time
-
-  msgDiv.innerHTML = `<b>${data.name}:</b> ${data.text} ${ticks} ${deleteHTML} ${timeHTML}`;
-
+  
+  msgDiv.innerHTML = `
+    <b>${data.name}:</b> ${data.text}
+    ${ticks}
+    ${deleteHTML}
+    <span class="time">${formatTime(data.time)}</span>
+  `;
+  
+  messagesDiv.appendChild(msgDiv);
+  
   if (data.name !== myName) {
     db.ref(`groupMessages/${currentGroup}/${snapshot.key}/seen`).set(true);
     if (soundEnabled) {
@@ -249,9 +354,6 @@ function displayMessage(snapshot) {
       notifySound.play();
     }
   }
-
-  messagesDiv.appendChild(msgDiv);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 // ================= UPDATE SEEN =================
@@ -273,9 +375,39 @@ function updateSeen(snapshot) {
 
 // ================= DELETE MESSAGE =================
 function deleteMessage(msgId) {
-  db.ref(`groupMessages/${currentGroup}/${msgId}`).remove();
-}
+  const msgDiv = document.getElementById(msgId);
+  if (!msgDiv) return;
+  
+  const bg = window.getComputedStyle(msgDiv).backgroundColor;
 
+
+  // Create particles INSIDE message
+  for (let i = 0; i < 20; i++) {
+    const dust = document.createElement("div");
+    dust.className = "dust";
+    
+    dust.style.background = bg;
+    dust.style.left = Math.random() * msgDiv.offsetWidth + "px";
+    dust.style.top = Math.random() * msgDiv.offsetHeight + "px";
+    
+    dust.style.setProperty("--x", (Math.random() - 0.5) * 100 + "px");
+    dust.style.setProperty("--y", (Math.random() - 0.5) * 100 + "px");
+    
+    msgDiv.appendChild(dust);
+    
+    setTimeout(() => dust.remove(), 600);
+  }
+  
+  // Shrink + fade
+  msgDiv.style.transition = "transform 0.35s ease, opacity 0.35s ease";
+  msgDiv.style.transform = "scale(0.75)";
+  msgDiv.style.opacity = "0";
+  
+  // Remove from Firebase AFTER animation
+  setTimeout(() => {
+    db.ref(`groupMessages/${currentGroup}/${msgId}`).remove();
+  }, 350);
+}
 // ================= TYPING INDICATOR =================
 var typingRef = db.ref("typing");
 
@@ -316,6 +448,27 @@ function unlockSound() {
   }).catch(() => {});
 }
 
+messagesDiv.addEventListener("scroll", () => {
+  isAtBottom =
+    messagesDiv.scrollTop + messagesDiv.clientHeight >=
+    messagesDiv.scrollHeight - 20;
+});
+
+
+//delete old 7 days messages 
+
+function cleanOldMessages(days = 7) {
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000; // default 7 days
+  const messagesRef = db.ref("groupMessages/" + currentGroup);
+  
+  messagesRef.orderByChild("time").endAt(cutoff).once("value", snapshot => {
+    snapshot.forEach(msg => {
+      messagesRef.child(msg.key).remove();
+    });
+  });
+}
+
+
 // Any first interaction unlocks sound
 document.addEventListener("click", unlockSound, { once: true });
 document.addEventListener("touchstart", unlockSound, { once: true });
@@ -331,3 +484,13 @@ setGroupMemberStatus(currentGroup);
 updateOnlineUsers();
 loadGroupMessages();
 
+
+
+// When joining a group or loading messages
+joinGroupFirebase(currentGroup);
+cleanOldMessages(); // cleanup old messages
+
+// Optional: repeat every hour
+setInterval(() => {
+  cleanOldMessages();
+}, 60 * 60 * 1000); // every 1 hour
