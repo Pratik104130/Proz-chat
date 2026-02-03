@@ -15,7 +15,7 @@ html, body {
 input,
 textarea,
 select {
-    font-size: 16px !important;
+    font-size: 17px !important;
     line-height: 1.4;
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
@@ -25,7 +25,7 @@ select {
 @supports (-webkit-touch-callout: none) {
     input,
     textarea {
-        font-size: 16px !important;
+        font-size: 17px !important;
     }
 }
 
@@ -548,7 +548,7 @@ h2{
     height:80px;
     margin-left: 30px;
     max-width: 700px;
-    font-size: 25px;
+    font-size: 45px;
 }
 #sendBtn{
     width:200px;
