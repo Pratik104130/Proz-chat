@@ -566,4 +566,25 @@ h2{
     font-size: 27px;
 }
 
+
+
+
+input,
+textarea,
+select {
+    font-size: 27px !important;
+    line-height: 1.4;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Android Chrome specific */
+@supports (-webkit-touch-callout: none) {
+
+    input,
+    textarea {
+        font-size: 27px !important;
+    }
+}
+
 }
