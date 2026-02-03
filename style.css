@@ -40,7 +40,7 @@ select {
    background:linear-gradient(30deg , red ,#B044C5);
 
     border-radius: 12px;
-    padding: 30px;
+    padding: 10px;
 }
 
 
@@ -128,7 +128,7 @@ h2 {
     margin-top: 2px;
 }
 .msg .time {
-    font-size: 12px;
+    font-size: 15px;
     color: gray;
     position: absolute;
     right: 5px;
@@ -145,6 +145,7 @@ h2 {
     margin-top: 6px;
 
 
+
 }
 input, button {
     touch-action: manipulation;
@@ -152,13 +153,14 @@ input, button {
 
 input {
     padding: 8px;
-    font-size: 14px;
-    font-size: 20px;   /* prevents auto-zoom */
+    font-size: 15px;
+/* prevents auto-zoom */
 
 }
 
 #message {
     flex: 1;
+
 
 
 }
@@ -181,9 +183,9 @@ button {
 }
 
 #typing {
-  font-size: 12px;
   opacity: 0.7;
   animation: breathe 1.6s ease-in-out infinite;
+  
 }
 
 @keyframes breathe {
@@ -203,10 +205,12 @@ button:active {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+
 }
 #createGroupBtn {
   padding: 5px 10px;
   cursor: pointer;
+  
 }
 
 #exitGroupBtn{
@@ -230,14 +234,14 @@ button:active {
 
 #username{
     width:150px;
-    
+  
     border:1px #000;
     background: #EEFCFF;
 }
 
 .msg-main{
     background: #FAFEFF;
-    font-size: 35px;
+
 }
 
 #sendBtn{
@@ -332,6 +336,7 @@ h4{
   content: "";
   position: absolute;
   inset: 0;
+
   border-radius: inherit;
   background: linear-gradient(
     120deg,
@@ -355,6 +360,7 @@ h4{
 /* ===== DUST DELETE EFFECT (FIXED) ===== */
 .msg {
   position: relative; /* IMPORTANT */
+
 }
 
 .dust {
@@ -389,7 +395,6 @@ h4{
     position: relative;
     left: -4px;
     top: -5px;
-    
     margin: 10px auto;
     background: linear-gradient(30deg, red, #B044C5);
     border-radius: 12px;
@@ -501,6 +506,8 @@ h2{
     position: absolute;
     left: -6px;
     bottom: 0;
+    font-size: 32px;
+
     width: 17px;
     height: 17px;
     background: inherit;
@@ -517,7 +524,7 @@ h2{
 }
 
 .msg .time {
-    font-size: 15px;
+    font-size: 30px;
     color: gray;
     position: absolute;
     right: 5px;
@@ -549,7 +556,7 @@ h2{
     height:80px;
     margin-left: 35px;
     width: 700px;
-    font-size: 35px;
+
 }
 #sendBtn{
     width:200px;
@@ -557,7 +564,7 @@ h2{
 }
 
 .delete{
-    font-size: 25px;
+    font-size: 27px;
     margin-left: 20px;
 }
 
@@ -572,7 +579,7 @@ h2{
 input,
 textarea,
 select {
-    font-size: 27px !important;
+    font-size: 44px !important;
     line-height: 1.4;
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
