@@ -547,9 +547,9 @@ h2{
 
 .msg-main{
     height:80px;
-    margin-left: 30px;
-    max-width: 700px;
-    font-size: 45px;
+    margin-left: 35px;
+    width: 700px;
+    font-size: 35px;
 }
 #sendBtn{
     width:200px;
