@@ -331,12 +331,11 @@ h4{
     /*extra    background: transparent;
 */
 }
-
+/*
 .msg::before {
   content: "";
   position: absolute;
   inset: 0;
-
   border-radius: inherit;
   background: linear-gradient(
     120deg,
@@ -351,10 +350,12 @@ h4{
 
 @keyframes energySweep {
   to {
-    transform: translateX(120%);
+    transform: translateX(110%);
+
+    
   }
 }
-
+*/
 
 /* DELETE MESSAGE ANIMATION */
 /* ===== DUST DELETE EFFECT (FIXED) ===== */
@@ -363,25 +364,6 @@ h4{
 
 }
 
-.dust {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  pointer-events: none;
-  animation: dustFly 550ms ease-out forwards;
-}
-
-@keyframes dustFly {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x), var(--y)) scale(0.3);
-    opacity: 0;
-  }
-}
 
 
 
