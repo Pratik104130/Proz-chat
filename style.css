@@ -237,6 +237,7 @@ button:active {
 
 .msg-main{
     background: #FAFEFF;
+    font-size: 20px;
 }
 
 #sendBtn{
