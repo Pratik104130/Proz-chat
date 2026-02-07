@@ -1,3 +1,5 @@
+//made by pratk
+
 // ================= FIREBASE CONFIG =================
 var firebaseConfig = {
   apiKey: "AIzaSyCRykGgYV0t3vqe1MraK7Hvg2uZvuhna4E",
